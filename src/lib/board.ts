@@ -112,10 +112,23 @@ export const createBoard = ({
   return board;
 };
 
-export interface Point {
+export class Point {
   x: number;
   y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+
+  toString() {
+    return pointToKey(this);
+  }
 }
+
+export const pointToKey = (point: Point) => {
+  return `${point.x},${point.y}`;
+};
 
 export const getCellsWhereWordCanBeInserted = (
   board: Board,
@@ -245,12 +258,12 @@ export const getPointsForWord = (
   switch (direction) {
     case Direction.LEFT_TO_RIGHT:
       for (let i = 0; i < word.length; i++) {
-        points.push({ x: x + i, y });
+        points.push(new Point(x + i, y));
       }
       break;
     case Direction.TOP_TO_BOTTOM:
       for (let i = 0; i < word.length; i++) {
-        points.push({ x, y: y + i });
+        points.push(new Point(x, y + i));
       }
       break;
   }

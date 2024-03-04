@@ -3,10 +3,12 @@ import {
   BoardCell,
   createBoard,
   getDirectionsWordCanBeInserted,
+  getPointsForWord,
 } from "@/lib/board";
 import { useStore } from "./store";
 import { useEffect, useMemo, useState } from "react";
 import { WordList } from "./WordList";
+import classNames from "classnames";
 
 const DEBUG = false;
 
@@ -19,12 +21,15 @@ export const Cell = ({ cell }: CellProps) => {
   const onMouseEnter = () => {
     store.setHoveredCell(cell);
   };
+  const className = store.getCellHighlightClassName({ x, y });
   return (
     <div
-      className="
+      className={classNames(
+        `
         p-1 flex justify-center items-center border rounded w-8 h-8 text-sm
-        hover:bg-sky-100
-      "
+        hover:bg-sky-100`,
+        className
+      )}
       onMouseEnter={onMouseEnter}
     >
       {char}
@@ -79,10 +84,32 @@ const Puzzle = () => {
     return [];
   }, [store, board, word]);
 
+  const COLORS = [
+    "text-sky-400",
+    "text-violet-400",
+    "text-orange-400",
+    "text-purple-400",
+    "text-red-400",
+  ];
+
+  const [wordsColors, setWordsColors] = useState<Record<string, string>>({});
+
   const handleWordClick = (word: string) => {
     const insertedWord = board.findInsertedWord(word);
     if (insertedWord) {
-      console.log(" => insertedWord:", insertedWord);
+      if (wordsColors[insertedWord.word]) {
+        store.clearHighlightedPoints();
+        setWordsColors({});
+        return;
+      }
+      const { x, y, word, direction } = insertedWord;
+      const points = getPointsForWord(board, word, x, y, direction);
+      store.clearHighlightedPoints();
+      const color = COLORS[0];
+      store.setHighlightedPoints(points, color);
+      setWordsColors({
+        [word]: color,
+      });
     } else {
       throw new Error(` => no inserted word found ${word}`);
     }
@@ -96,7 +123,11 @@ const Puzzle = () => {
         })}
       </div>
       <div className="my-4">
-        <WordList words={words} onWordClick={handleWordClick} />
+        <WordList
+          words={words}
+          onWordClick={handleWordClick}
+          wordtoClassNameMap={wordsColors}
+        />
       </div>
       {DEBUG && (
         <div className="my-4 flex flex-col gap-4">
