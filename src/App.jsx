@@ -2,9 +2,9 @@ import Puzzle from "@/components/Puzzle/Puzzle.tsx";
 
 function App() {
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center pt-12">
       <div>
-        <h1 className="text-3xl text-blue-400">World search</h1>
+        <h1 className="text-3xl text-blue-400 text-center">World search</h1>
         <div className="my-4">
           <Puzzle />
         </div>

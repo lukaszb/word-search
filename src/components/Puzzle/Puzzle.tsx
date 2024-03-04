@@ -29,7 +29,7 @@ export const Row = ({ cells }: RowProps) => {
 
 const Puzzle = () => {
   const size = 9;
-  const board = createBoard(size, size, "X");
+  const board = createBoard(size, size);
   return (
     <>
       <div className="flex flex-col gap-1">

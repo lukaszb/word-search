@@ -16,7 +16,7 @@ export class Board {
   }
 }
 
-export const createBoard = (x: number, y: number, fill: string) => {
+export const createBoard = (x: number, y: number, fill: string = " ") => {
   return Array.from({ length: y }).map((_) =>
     Array.from({ length: x }).fill(fill)
   ) as string[][];
