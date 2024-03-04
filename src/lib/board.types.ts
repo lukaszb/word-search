@@ -1,20 +1,14 @@
-export class BoardCell {
-  x: number;
-  y: number;
-  char: string;
-
-  constructor(x: number, y: number, char: string) {
-    this.x = x;
-    this.y = y;
-    this.char = char;
-  }
+export enum Direction {
+  LEFT_RIGHT = "LEFT_RIGHT",
+  TOP_DOWN = "TOP_DOWN",
 }
+const DIRECTIONS = [Direction.LEFT_RIGHT, Direction.TOP_DOWN];
 
 export class Board {
   sizeX: number;
   sizeY: number;
   fill: string;
-  _board: BoardCell[][];
+  _board: string[][];
 
   constructor(sizeX: number, sizeY: number, fill = " ") {
     this.sizeX = sizeX;
@@ -24,10 +18,7 @@ export class Board {
   }
 
   init() {
-    const simpleBoard = initBoard(this.sizeX, this.sizeY, this.fill);
-    this._board = simpleBoard.map((row, x) => {
-      return row.map((char, y) => new BoardCell(x, y, char));
-    });
+    this._board = initBoard(this.sizeX, this.sizeY, this.fill);
   }
 
   getRows() {
@@ -52,7 +43,8 @@ export const createBoard = ({ size }: CreateBoardProps) => {
   return new Board(size, size);
 };
 
-export const getCellsWhereWordCanBeInserted = (
-  board: Board,
-  word: string
-) => {};
+export const getCellsWhereWordCanBeInserted = (board: Board, word: string) => {
+  board.getRows().forEach((row, y) => {
+    row.forEach((cell, x));
+  });
+};
