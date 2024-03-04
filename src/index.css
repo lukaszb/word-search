@@ -6,3 +6,7 @@
   size: auto;
   margin: 0mm;
 }
+
+pre {
+  @apply bg-black/95 p-2 rounded-lg text-white/80;
+}

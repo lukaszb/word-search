@@ -1,5 +1,6 @@
 import { BoardCell, createBoard } from "@/lib/board";
 import { useStore } from "./store";
+import { useState } from "react";
 
 const DEBUG = true;
 
@@ -12,14 +13,13 @@ export const Cell = ({ cell }: CellProps) => {
   const onMouseEnter = () => {
     store.setHoveredCell(cell);
   };
-  const onMouseLeave = () => {
-    store.clearHoveredCell();
-  };
   return (
     <div
-      className="p-1 flex justify-center items-center border rounded w-8 h-8 text-sm"
+      className="
+        p-1 flex justify-center items-center border rounded w-8 h-8 text-sm
+        hover:bg-sky-100
+      "
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
     >
       {char}
     </div>
@@ -43,21 +43,34 @@ const Puzzle = () => {
   const size = 9;
   const store = useStore();
   const board = createBoard({ size });
+  const onMouseLeave = () => {
+    store.clearHoveredCell();
+  };
+
+  const [word, setWord] = useState("elephant");
+
   return (
     <>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1" onMouseLeave={onMouseLeave}>
         {board.getRows().map((cells, x) => {
           return <Row cells={cells} key={x} />;
         })}
       </div>
-      <pre>{JSON.stringify({ hoveredCell: store.hoveredCell }, null, 2)}</pre>
       {DEBUG && (
-        <div className="my-2 text-sky-400">
+        <div className="my-4 flex flex-col gap-4">
           {store.hoveredCell && (
-            <p>
-              Hover: ({store.hoveredCell.x}, {store.hoveredCell.y})
-            </p>
+            <div>
+              <p className="text-sky-400">
+                Hover: ({store.hoveredCell.x}, {store.hoveredCell.y})
+              </p>
+              <pre>
+                {JSON.stringify({ hoveredCell: store.hoveredCell }, null, 2)}
+              </pre>
+            </div>
           )}
+          <div>
+            <input type="text" onChange={(e) => setWord(e.target.value)} />
+          </div>
         </div>
       )}
     </>
