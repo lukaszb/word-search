@@ -1,11 +1,13 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { BoardCell } from "@/lib/board";
+import { Board, BoardCell } from "@/lib/board";
 
 interface State {
   hoveredCell?: BoardCell;
   clearHoveredCell: () => void;
   setHoveredCell: (cell: BoardCell) => void;
+  board?: Board;
+  setBoard: (board: Board) => void;
 }
 
 export const useStore = create<State>()(
@@ -26,6 +28,13 @@ export const useStore = create<State>()(
               hoveredCell: cell,
             };
           }),
+        board: undefined,
+        setBoard: (board?: Board) => {
+          return set(state => ({
+            ...state,
+            board
+          }))
+        }
       }),
       {
         name: "board-storage",

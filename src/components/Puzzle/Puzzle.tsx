@@ -1,8 +1,14 @@
-import { BoardCell, createBoard } from "@/lib/board";
+import {
+  Board,
+  BoardCell,
+  createBoard,
+  getDirectionsWordCanBeInserted,
+} from "@/lib/board";
 import { useStore } from "./store";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { WordList } from "./WordList";
 
-const DEBUG = true;
+const DEBUG = false;
 
 export interface CellProps {
   cell: BoardCell;
@@ -42,12 +48,45 @@ export const Row = ({ cells }: RowProps) => {
 const Puzzle = () => {
   const size = 9;
   const store = useStore();
-  const board = createBoard({ size });
+  const words = ["leopard", "elephant", "lion", "turtle", "bird"].map((w) =>
+    w.toUpperCase()
+  );
+  const getNewBoard = () => {
+    return createBoard({ size, words, fillEmptyCellsWithRandomChars: true });
+  };
+  const [board, setBoard] = useState<Board>(getNewBoard());
+  Object.assign(window, { store });
+
+  useEffect(() => {
+    store.setBoard(board);
+  }, []);
+
   const onMouseLeave = () => {
     store.clearHoveredCell();
   };
 
   const [word, setWord] = useState("elephant");
+
+  const possibleDirections = useMemo(() => {
+    if (store.hoveredCell) {
+      return getDirectionsWordCanBeInserted(
+        board,
+        word,
+        store.hoveredCell.x,
+        store.hoveredCell.y
+      );
+    }
+    return [];
+  }, [store, board, word]);
+
+  const handleWordClick = (word: string) => {
+    const insertedWord = board.findInsertedWord(word);
+    if (insertedWord) {
+      console.log(" => insertedWord:", insertedWord);
+    } else {
+      throw new Error(` => no inserted word found ${word}`);
+    }
+  };
 
   return (
     <>
@@ -55,6 +94,9 @@ const Puzzle = () => {
         {board.getRows().map((cells, x) => {
           return <Row cells={cells} key={x} />;
         })}
+      </div>
+      <div className="my-4">
+        <WordList words={words} onWordClick={handleWordClick} />
       </div>
       {DEBUG && (
         <div className="my-4 flex flex-col gap-4">
@@ -68,8 +110,14 @@ const Puzzle = () => {
               </pre>
             </div>
           )}
-          <div>
-            <input type="text" onChange={(e) => setWord(e.target.value)} />
+          <div className="flex flex-col gap-2">
+            <input
+              value={word}
+              className="font-sans block text-sm w-full py-2 px-3 ring-1 ring-slate-900/10 text-slate-500 rounded-lg shadow-sm dark:bg-slate-800 dark:ring-0 dark:highlight-white/5 dark:text-slate-400"
+              type="text"
+              onChange={(e) => setWord(e.target.value)}
+            />
+            <pre>{JSON.stringify({ possibleDirections }, null, 2)}</pre>
           </div>
         </div>
       )}
