@@ -11,14 +11,14 @@ describe("board.canInsertWord", () => {
       direction: Direction.LEFT_TO_RIGHT,
       expected: true,
     },
-    // {
-    //   size: 3,
-    //   word: "foo",
-    //   x: 2,
-    //   y: 0,
-    //   direction: Direction.LEFT_TO_RIGHT,
-    //   expected: false,
-    // },
+    {
+      size: 3,
+      word: "foo",
+      x: 2,
+      y: 0,
+      direction: Direction.LEFT_TO_RIGHT,
+      expected: false,
+    },
   ])(
     'test if can insert word "$word" at $x, $y, $direction',
     ({ size, word, x, y, direction, expected }) => {
