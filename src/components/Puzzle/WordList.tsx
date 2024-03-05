@@ -1,12 +1,13 @@
 import classNames from "classnames";
+import { getStyleForWord } from "./helpers";
 
 interface Props {
   words: string[];
   onWordClick?: (word: string) => void;
-  wordtoClassNameMap?: Record<string, string>;
+  selectedWords?: string[];
 }
 
-export const WordList = ({ words, onWordClick, wordtoClassNameMap }: Props) => {
+export const WordList = ({ words, onWordClick, selectedWords }: Props) => {
   const handleClick = (word: string) => {
     onWordClick?.(word);
   };
@@ -19,7 +20,7 @@ export const WordList = ({ words, onWordClick, wordtoClassNameMap }: Props) => {
           <li
             className={classNames(
               "border rounded uppercase p-1 text-xs cursor-pointer",
-              wordtoClassNameMap?.[word]
+              selectedWords.includes(word) ? getStyleForWord(word) : ""
             )}
             key={word}
             onClick={() => handleClick(word)}

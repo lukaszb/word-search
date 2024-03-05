@@ -1,74 +1,96 @@
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
 import { Board, BoardCell, Point, pointToKey } from "@/lib/board";
 
-interface State {
+interface BaseBoardState {
   hoveredCell?: BoardCell;
   clearHoveredCell: () => void;
   setHoveredCell: (cell: BoardCell) => void;
   board?: Board;
   setBoard: (board: Board) => void;
   wordClassNamesMap?: Record<string, string>;
-  highlightedPoints: Record<string, string>;
-  clearHighlightedPoints: () => void;
-  setHighlightedPoints: (points: Point[], className: string) => void;
-  getCellHighlightClassName: (point: Point) => string;
 }
 
-export const useStore = create<State>()(
-  devtools(
-    persist(
-      (set) => ({
-        hoveredCell: undefined,
-        clearHoveredCell: () => {
-          set((state) => ({
-            ...state,
-            hoveredCell: undefined,
-          }));
-        },
-        setHoveredCell: (cell: BoardCell) =>
-          set((state) => {
-            return {
-              ...state,
-              hoveredCell: cell,
-            };
-          }),
-        board: undefined,
-        setBoard: (board?: Board) => {
-          useStore.getState().clearHighlightedPoints();
-          return set((state) => ({
-            ...state,
-            board,
-          }));
-        },
-        highlightedPoints: {},
-        clearHighlightedPoints: () => {
-          set((state) => ({
-            ...state,
-            highlightedPoints: {},
-          }));
-        },
-        setHighlightedPoints: (points: Point[], className: string) => {
-          const submap = points.reduce((map, point) => {
-            map[point.toString()] = className;
-            return map;
-          }, {} as Record<string, string>);
-          return set((state) => ({
-            ...state,
-            highlightedPoints: {
-              ...state.highlightedPoints,
-              ...submap,
-            },
-          }));
-        },
-        getCellHighlightClassName: (point: Point) => {
-          const { highlightedPoints } = useStore.getState();
-          return highlightedPoints[pointToKey(point)];
-        },
-      }),
-      {
-        name: "board-storage",
-      }
-    )
-  )
-);
+interface SelectionState {
+  isWordSelected: (word: string) => boolean;
+  selectedWords: Set<string>;
+  areAllWordsSelected: () => boolean;
+  getSelectedWordsList: () => string[];
+  selectWord: (word: string) => void;
+  deselectWord: (word: string) => void;
+  selectAllWords: () => void;
+  deselectAllWords: () => void;
+  isCellSelected: (point: Point) => boolean;
+}
+
+type State = BaseBoardState & SelectionState;
+
+export const useStore = create<State>()((set, get) => ({
+  hoveredCell: undefined,
+  clearHoveredCell: () => {
+    set((state) => ({
+      ...state,
+      hoveredCell: undefined,
+    }));
+  },
+  setHoveredCell: (cell: BoardCell) =>
+    set((state) => {
+      return {
+        ...state,
+        hoveredCell: cell,
+      };
+    }),
+  board: undefined,
+  setBoard: (board?: Board) => {
+    return set((state) => ({
+      ...state,
+      board,
+    }));
+  },
+
+  // selection state
+  isWordSelected: (word: string) => {
+    return useStore.getState().selectedWords.has(word);
+  },
+  isCellSelected: (point: Point) => {
+    return true;
+  },
+  selectedWords: new Set<string>(),
+  areAllWordsSelected: () => {
+    const selectedWordsLength = get().selectedWords.size;
+    const insertedWordsLength = get().board?.insertedWords.length;
+    return (
+      selectedWordsLength === insertedWordsLength && selectedWordsLength > 0
+    );
+  },
+  getSelectedWordsList: () =>
+    Array.from(useStore.getState().selectedWords) as string[],
+  selectWord: (word: string) => {
+    console.log(" => selectWord", word);
+    set((state) => ({
+      ...state,
+      selectedWords: new Set([...Array.from(state.selectedWords), word]),
+    }));
+  },
+  deselectWord: (word: string) => {
+    set((state) => ({
+      ...state,
+      selectedWords: new Set(
+        Array.from(state.selectedWords).filter((w) => w !== word)
+      ),
+    }));
+  },
+  selectAllWords: () => {
+    set((state) => ({
+      ...state,
+      selectedWords: new Set(
+        state.board?.insertedWords.map((w) => w.word) || []
+      ),
+    }));
+  },
+  deselectAllWords: () => {
+    set((state) => ({
+      ...state,
+      selectedWords: new Set<string>(),
+    }));
+  },
+}));

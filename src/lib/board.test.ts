@@ -24,8 +24,20 @@ describe("board.canInsertWord", () => {
     ({ size, word, x, y, direction, expected }) => {
       const board = createBoard({ size });
       const canInsert = canInsertWord(board, word, x, y, direction);
-      console.log(" => canInsert:", canInsert);
       expect(canInsert).toBe(expected);
     }
   );
+
+  test("can insert word in partially filled board", () => {
+    const board = createBoard({ size: 3 });
+    board.insertWord("bar", 1, 0, Direction.TOP_TO_BOTTOM);
+    const canInsert = canInsertWord(
+      board,
+      "tap",
+      0,
+      1,
+      Direction.LEFT_TO_RIGHT
+    );
+    expect(canInsert).toBe(true);
+  });
 });

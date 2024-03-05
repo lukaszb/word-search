@@ -15,11 +15,17 @@ export class BoardCell {
   x: number;
   y: number;
   char: string;
+  words: InsertedWord[];
 
   constructor(x: number, y: number, char: string) {
     this.x = x;
     this.y = y;
     this.char = char;
+    this.words = [];
+  }
+
+  addWord(word: InsertedWord) {
+    this.words.push(word);
   }
 }
 
@@ -28,6 +34,7 @@ export interface InsertedWord {
   x: number;
   y: number;
   direction: Direction;
+  points: Point[];
 }
 
 export class Board {
@@ -83,6 +90,26 @@ export class Board {
 
   findInsertedWord(word: string) {
     return this.insertedWords.find((w) => w.word === word);
+  }
+
+  insertWord(word: string, x: number, y: number, direction: Direction) {
+    if (!canInsertWord(this, word, x, y, direction)) {
+      throw new Error("Cannot insert word at this position");
+    }
+    const points = getPointsForWord(word, x, y, direction);
+    const insertedWord = {
+      x,
+      y,
+      word,
+      direction,
+      points,
+    };
+    this.insertedWords.push(insertedWord);
+    points.forEach((point, i) => {
+      const cell = this.getCell(point.x, point.y);
+      cell.char = word[i];
+      cell.words = [...cell.words, insertedWord];
+    });
   }
 }
 
@@ -189,19 +216,7 @@ export const insertWordAt = (
   y: number,
   direction: Direction
 ) => {
-  if (!canInsertWord(board, word, x, y, direction)) {
-    throw new Error("Cannot insert word at this position");
-  }
-  board.insertedWords.push({
-    x,
-    y,
-    word,
-    direction,
-  });
-  const points = getPointsForWord(word, x, y, direction);
-  points.forEach((point, i) => {
-    board.setCell(point.x, point.y, word[i]);
-  });
+  board.insertWord(word, x, y, direction);
 };
 
 export const canInsertWord = (
@@ -213,9 +228,10 @@ export const canInsertWord = (
 ) => {
   let canInsert = true;
   const points = getPointsForWord(word, x, y, direction);
-  for (const point of points) {
+  for (let i = 0; i < points.length; i++) {
+    const point = points[i];
     const cell = board.getCell(point.x, point.y);
-    if (!cell || !!cell.char) {
+    if (!cell || (!!cell.char && cell.char !== word[i])) {
       canInsert = false;
       break;
     }
