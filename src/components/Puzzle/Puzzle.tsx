@@ -103,7 +103,7 @@ const Puzzle = () => {
         return;
       }
       const { x, y, word, direction } = insertedWord;
-      const points = getPointsForWord(board, word, x, y, direction);
+      const points = getPointsForWord(word, x, y, direction);
       store.clearHighlightedPoints();
       const color = COLORS[0];
       store.setHighlightedPoints(points, color);

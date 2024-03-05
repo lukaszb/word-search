@@ -198,20 +198,10 @@ export const insertWordAt = (
     word,
     direction,
   });
-  switch (direction) {
-    case Direction.LEFT_TO_RIGHT:
-      for (const char of word) {
-        board.setCell(x, y, char);
-        x++;
-      }
-      break;
-    case Direction.TOP_TO_BOTTOM:
-      for (const char of word) {
-        board.setCell(x, y, char);
-        y++;
-      }
-      break;
-  }
+  const points = getPointsForWord(word, x, y, direction);
+  points.forEach((point, i) => {
+    board.setCell(point.x, point.y, word[i]);
+  });
 };
 
 export const canInsertWord = (
@@ -222,33 +212,18 @@ export const canInsertWord = (
   direction: Direction
 ) => {
   let canInsert = true;
-  switch (direction) {
-    case Direction.LEFT_TO_RIGHT:
-      for (const char of word) {
-        const cell = board.getCell(x, y);
-        if (!cell || !!cell.char) {
-          canInsert = false;
-          break;
-        }
-        x++;
-      }
+  const points = getPointsForWord(word, x, y, direction);
+  for (const point of points) {
+    const cell = board.getCell(point.x, point.y);
+    if (!cell || !!cell.char) {
+      canInsert = false;
       break;
-    case Direction.TOP_TO_BOTTOM:
-      for (const char of word) {
-        const cell = board.getCell(x, y);
-        if (!cell || !!cell.char) {
-          canInsert = false;
-          break;
-        }
-        y++;
-      }
-      break;
+    }
   }
   return canInsert;
 };
 
 export const getPointsForWord = (
-  board: Board,
   word: string,
   x: number,
   y: number,
