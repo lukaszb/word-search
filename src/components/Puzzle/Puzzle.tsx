@@ -1,12 +1,6 @@
-import {
-  Board,
-  BoardCell,
-  createBoard,
-  getDirectionsWordCanBeInserted,
-  getPointsForWord,
-} from "@/lib/board";
+import { BoardCell, createBoard } from "@/lib/board";
 import { useStore } from "./store";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { WordList } from "./WordList";
 import classNames from "classnames";
 import { getStyleForWord, useShortcuts } from "./helpers";
@@ -15,7 +9,6 @@ export interface CellProps {
   cell: BoardCell;
 }
 export const Cell = ({ cell }: CellProps) => {
-  const { x, y, char } = cell;
   const store = useStore();
   const onMouseEnter = () => {
     store.setHoveredCell(cell);
@@ -35,7 +28,7 @@ export const Cell = ({ cell }: CellProps) => {
       )}
       onMouseEnter={onMouseEnter}
     >
-      {char}
+      {cell.char}
     </div>
   );
 };
