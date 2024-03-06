@@ -13,7 +13,7 @@ export const useShortcuts = () => {
   });
 };
 
-const COLORS = [
+export const COLORS = [
   "bg-sky-400 text-white",
   "bg-violet-400 text-white",
   "bg-orange-400 text-white",

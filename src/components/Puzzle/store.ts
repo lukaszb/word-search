@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { Board, BoardCell, Point, pointToKey } from "@/lib/board";
+import { Board, BoardCell, Point } from "@/lib/board";
+import { COLORS } from "./Puzzle.helpers";
 
 interface BaseBoardState {
   hoveredCell?: BoardCell;
@@ -20,6 +21,7 @@ interface SelectionState {
   selectAllWords: () => void;
   deselectAllWords: () => void;
   isCellSelected: (point: Point) => boolean;
+  wordToStyleMap: Record<string, string>;
 }
 
 type State = BaseBoardState & SelectionState;
@@ -92,5 +94,16 @@ export const useStore = create<State>()((set, get) => ({
       ...state,
       selectedWords: new Set<string>(),
     }));
+  },
+  wordToStyleMap: {},
+  getStyleForWord: (word: string) => {
+    const { board, wordToStyleMap } = get();
+    if (!wordToStyleMap[word]) {
+      // init wordToStyleMap based on board
+      board?.insertedWords.forEach((iw, i) => {
+        wordToStyleMap[iw.word] = COLORS[i % COLORS.length];
+      });
+    }
+    return wordToStyleMap[word];
   },
 }));

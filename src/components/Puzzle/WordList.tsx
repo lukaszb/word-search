@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { getStyleForWord } from "./helpers";
+import { useStore } from "./store";
 
 interface Props {
   words: string[];
@@ -8,6 +8,7 @@ interface Props {
 }
 
 export const WordList = ({ words, onWordClick, selectedWords }: Props) => {
+  const store = useStore();
   const handleClick = (word: string) => {
     onWordClick?.(word);
   };
@@ -20,7 +21,7 @@ export const WordList = ({ words, onWordClick, selectedWords }: Props) => {
           <li
             className={classNames(
               "border rounded uppercase p-1 text-xs cursor-pointer",
-              selectedWords.includes(word) ? getStyleForWord(word) : ""
+              selectedWords.includes(word) ? store.getStyleForWord(word) : ""
             )}
             key={word}
             onClick={() => handleClick(word)}

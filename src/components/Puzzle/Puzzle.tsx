@@ -3,7 +3,7 @@ import { useStore } from "./store";
 import { useEffect } from "react";
 import { WordList } from "./WordList";
 import classNames from "classnames";
-import { getStyleForWord, useShortcuts } from "./helpers";
+import { getStyleForWord, useShortcuts } from "./Puzzle.helpers";
 
 export interface CellProps {
   cell: BoardCell;
@@ -17,7 +17,7 @@ export const Cell = ({ cell }: CellProps) => {
     store.isWordSelected(w.word)
   )[0];
   const isSelected = !!selectedWord;
-  const className = isSelected ? getStyleForWord(selectedWord.word) : "";
+  const className = isSelected ? store.getStyleForWord(selectedWord.word) : "";
   return (
     <div
       className={classNames(
@@ -60,6 +60,7 @@ const Puzzle = () => {
   useEffect(() => {
     const board = getNewBoard();
     store.setBoard(board);
+    store.selectAllWords();
   }, []);
 
   useShortcuts();
