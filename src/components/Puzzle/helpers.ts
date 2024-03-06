@@ -4,7 +4,7 @@ import { useKeyPressEvent } from "react-use";
 export const useShortcuts = () => {
   const store = useStore();
 
-  useKeyPressEvent("A", () => {
+  useKeyPressEvent("a", () => {
     if (store.areAllWordsSelected()) {
       store.deselectAllWords();
     } else {
