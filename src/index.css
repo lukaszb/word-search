@@ -10,3 +10,7 @@
 pre {
   @apply bg-black/95 p-2 rounded-lg text-white/80;
 }
+
+.link {
+  @apply cursor-pointer hover:text-sky-400;
+}

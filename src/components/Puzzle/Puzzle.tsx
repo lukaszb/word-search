@@ -1,6 +1,6 @@
+import { useEffect, useMemo } from "react";
 import { BoardCell, createBoard } from "@/lib/board";
 import { useStore } from "./store";
-import { useEffect } from "react";
 import { WordList } from "./WordList";
 import classNames from "classnames";
 import { getStyleForWord, useShortcuts } from "./Puzzle.helpers";
@@ -46,11 +46,16 @@ export const Row = ({ cells }: RowProps) => {
   );
 };
 
-const Puzzle = () => {
+export interface PuzzleProps {
+  words: string[];
+}
+
+const Puzzle = ({ words: wordsProp }: PuzzleProps) => {
   const size = 9;
   const store = useStore();
-  const words = ["leopard", "elephant", "lion", "turtle", "bird"].map((w) =>
-    w.toUpperCase()
+  const words = useMemo(
+    () => wordsProp.map((w) => w.toUpperCase()),
+    [wordsProp]
   );
   const getNewBoard = () => {
     return createBoard({ size, words, fillEmptyCellsWithRandomChars: true });
@@ -61,7 +66,7 @@ const Puzzle = () => {
     const board = getNewBoard();
     store.setBoard(board);
     store.selectAllWords();
-  }, []);
+  }, [wordsProp]);
 
   useShortcuts();
 
