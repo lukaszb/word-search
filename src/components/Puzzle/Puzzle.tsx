@@ -51,12 +51,18 @@ export interface PuzzleProps {
 }
 
 const Puzzle = ({ words: wordsProp }: PuzzleProps) => {
-  const size = 9;
   const store = useStore();
   const words = useMemo(
     () => wordsProp.map((w) => w.toUpperCase()),
     [wordsProp]
   );
+
+  const maxWordLength = useMemo(() => {
+    return Math.max(...wordsProp.map((w) => w.length));
+  }, [wordsProp]);
+
+  const size = maxWordLength + 2;
+
   const getNewBoard = () => {
     return createBoard({ size, words, fillEmptyCellsWithRandomChars: true });
   };
@@ -65,7 +71,7 @@ const Puzzle = ({ words: wordsProp }: PuzzleProps) => {
   useEffect(() => {
     const board = getNewBoard();
     store.setBoard(board);
-    store.selectAllWords();
+    // store.selectAllWords();
   }, [wordsProp]);
 
   useShortcuts();
