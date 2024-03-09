@@ -3,7 +3,7 @@ import { BoardCell, createBoard } from "@/lib/board";
 import { useStore } from "./store";
 import { WordList } from "./WordList";
 import classNames from "classnames";
-import { getStyleForWord, useShortcuts } from "./Puzzle.helpers";
+import { useShortcuts } from "./Puzzle.helpers";
 
 export interface CellProps {
   cell: BoardCell;

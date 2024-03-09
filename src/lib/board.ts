@@ -9,7 +9,12 @@ export enum Direction {
   RIGHT_TOP_TO_LEFT_BOTTOM = "RIGHT_TOP_TO_LEFT_BOTTOM",
 }
 
-export const DIRECTIONS = [Direction.LEFT_TO_RIGHT, Direction.TOP_TO_BOTTOM];
+export const DIRECTIONS = [
+  Direction.LEFT_TO_RIGHT,
+  Direction.TOP_TO_BOTTOM,
+  Direction.LEFT_BOTTOM_TO_RIGHT_TOP,
+  Direction.LEFT_TOP_TO_RIGHT_BOTTOM,
+];
 
 export class BoardCell {
   x: number;
@@ -255,6 +260,16 @@ export const getPointsForWord = (
     case Direction.TOP_TO_BOTTOM:
       for (let i = 0; i < word.length; i++) {
         points.push(new Point(x, y + i));
+      }
+      break;
+    case Direction.LEFT_BOTTOM_TO_RIGHT_TOP:
+      for (let i = 0; i < word.length; i++) {
+        points.push(new Point(x + 1, y - i));
+      }
+      break;
+    case Direction.LEFT_TOP_TO_RIGHT_BOTTOM:
+      for (let i = 0; i < word.length; i++) {
+        points.push(new Point(x + 1, y + i));
       }
       break;
   }
