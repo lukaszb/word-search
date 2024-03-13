@@ -11,6 +11,12 @@ export const useShortcuts = () => {
       store.selectAllWords();
     }
   });
+
+  useKeyPressEvent("r", () => {
+    const size = store.board.sizeX;
+    const words = store.board.insertedWords.map((w) => w.word);
+    store.initBoard({ size, words });
+  });
 };
 
 export const COLORS = [

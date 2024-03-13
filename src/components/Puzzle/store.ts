@@ -1,8 +1,15 @@
 import { create } from "zustand";
-import { Board, BoardCell, Point } from "@/lib/board";
+import { Board, BoardCell, Point, createBoard } from "@/lib/board";
 import { COLORS } from "./Puzzle.helpers";
 
+export interface InitBoardProps {
+  words: string[];
+  size: number;
+  fillEmptyCellsWithRandomChars?: boolean;
+}
+
 interface BaseBoardState {
+  initBoard: (props: InitBoardProps) => void;
   hoveredCell?: BoardCell;
   clearHoveredCell: () => void;
   setHoveredCell: (cell: BoardCell) => void;
@@ -47,6 +54,13 @@ export const useStore = create<State>()((set, get) => ({
       ...state,
       board,
     }));
+  },
+  initBoard: (props: InitBoardProps) => {
+    const { words, size, fillEmptyCellsWithRandomChars = true } = props;
+    const board = createBoard({ size, words, fillEmptyCellsWithRandomChars });
+    const store = get();
+    store.setBoard(board);
+    store.selectAllWords();
   },
 
   // selection state

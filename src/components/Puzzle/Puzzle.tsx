@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { BoardCell, createBoard } from "@/lib/board";
+import { BoardCell } from "@/lib/board";
 import { useStore } from "./store";
 import { WordList } from "./WordList";
 import classNames from "classnames";
@@ -63,15 +63,14 @@ const Puzzle = ({ words: wordsProp }: PuzzleProps) => {
 
   const size = maxWordLength + 2;
 
-  const getNewBoard = () => {
-    return createBoard({ size, words, fillEmptyCellsWithRandomChars: true });
-  };
   Object.assign(window, { store });
 
   useEffect(() => {
-    const board = getNewBoard();
-    store.setBoard(board);
-    // store.selectAllWords();
+    store.initBoard({
+      size,
+      words,
+      fillEmptyCellsWithRandomChars: true,
+    });
   }, [wordsProp]);
 
   useShortcuts();
