@@ -60,7 +60,7 @@ export const useStore = create<State>()((set, get) => ({
     const board = createBoard({ size, words, fillEmptyCellsWithRandomChars });
     const store = get();
     store.setBoard(board);
-    store.selectAllWords();
+    // store.selectAllWords();
   },
 
   // selection state
@@ -81,7 +81,6 @@ export const useStore = create<State>()((set, get) => ({
   getSelectedWordsList: () =>
     Array.from(useStore.getState().selectedWords) as string[],
   selectWord: (word: string) => {
-    console.log(" => selectWord", word);
     set((state) => ({
       ...state,
       selectedWords: new Set([...Array.from(state.selectedWords), word]),

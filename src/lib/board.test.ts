@@ -1,5 +1,10 @@
 import { describe, it, test, expect } from "vitest";
-import { Direction, canInsertWord, createBoard } from "./board";
+import {
+  Direction,
+  canInsertWord,
+  createBoard,
+  getPointsForWord,
+} from "./board";
 
 describe("board.canInsertWord", () => {
   test.each([
@@ -40,4 +45,37 @@ describe("board.canInsertWord", () => {
     );
     expect(canInsert).toBe(true);
   });
+});
+
+describe("board.getPointsForWord", () => {
+  test.each([
+    {
+      word: "foo",
+      x: 0,
+      y: 0,
+      direction: Direction.LEFT_TO_RIGHT,
+      expected: [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+      ],
+    },
+    {
+      word: "foo",
+      x: 0,
+      y: 2,
+      direction: Direction.LEFT_TOP_TO_RIGHT_BOTTOM,
+      expected: [
+        [0, 2],
+        [1, 3],
+        [2, 4],
+      ],
+    },
+  ])(
+    'test points for word "$word" at (%x, %y) with direction $direction',
+    ({ word, x, y, direction, expected }) => {
+      const points = getPointsForWord(word, x, y, direction);
+      expect(points.map((p) => [p.x, p.y])).toEqual(expected);
+    }
+  );
 });

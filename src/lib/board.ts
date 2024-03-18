@@ -16,6 +16,17 @@ export const DIRECTIONS = [
   Direction.LEFT_TOP_TO_RIGHT_BOTTOM,
 ];
 
+export const ALL_DIRECTIONS = [
+  Direction.LEFT_TO_RIGHT,
+  Direction.RIGHT_TO_LEFT,
+  Direction.TOP_TO_BOTTOM,
+  Direction.BOTTOM_TO_TOP,
+  Direction.LEFT_BOTTOM_TO_RIGHT_TOP,
+  Direction.LEFT_TOP_TO_RIGHT_BOTTOM,
+  Direction.RIGHT_BOTTOM_TO_LEFT_TOP,
+  Direction.RIGHT_TOP_TO_LEFT_BOTTOM,
+];
+
 export class BoardCell {
   x: number;
   y: number;
@@ -162,6 +173,29 @@ export const pointToKey = (point: Point) => {
   return `${point.x},${point.y}`;
 };
 
+export const getCellsWhereWordCanBeInsertedByDirection = (
+  board: Board,
+  word: string
+): Record<Direction, Point[]> => {
+  const map: Record<Direction, Point[]> = ALL_DIRECTIONS.reduce(
+    (map, dir) => ({
+      ...map,
+      [dir]: [],
+    }),
+    {} as Record<Direction, Point[]>
+  );
+
+  board.getRows().forEach((row, y) => {
+    row.forEach((cell, x) => {
+      const directions = getDirectionsWordCanBeInserted(board, word, x, y);
+      directions.forEach((dir) => {
+        map[dir].push(new Point(x, y));
+      });
+    });
+  });
+  return map;
+};
+
 export const getCellsWhereWordCanBeInserted = (
   board: Board,
   word: string
@@ -199,19 +233,65 @@ export const getRandomElement = <T>(items: T[]): T => {
 };
 
 export const insertWordAtRandom = (board: Board, word: string) => {
-  const points = getCellsWhereWordCanBeInserted(board, word);
-  const point = getRandomElement(points);
-  if (!point) {
+  const [point, direction] = getRandomPointAndDirectionToInsertWord(
+    board,
+    word
+  );
+  insertWordAt(board, word, point.x, point.y, direction);
+};
+
+enum Strategy {
+  NAIVE = "NAIVE",
+  BALANCED_DIRECTIONS = "BALANCED_DIRECTIONS",
+}
+
+export const getRandomPointAndDirectionToInsertWord = (
+  board: Board,
+  word: string,
+  strategy = Strategy.BALANCED_DIRECTIONS
+): [Point, Direction] => {
+  if (strategy === Strategy.NAIVE) {
+    const points = getCellsWhereWordCanBeInserted(board, word);
+    const point = getRandomElement(points);
+    if (!point) {
+      throw new Error("Cannot find point to insert word");
+    }
+    const directions = getDirectionsWordCanBeInserted(
+      board,
+      word,
+      point.x,
+      point.y
+    );
+    const direction = getRandomElement(directions);
+    return [point, direction];
+  } else if (strategy === Strategy.BALANCED_DIRECTIONS) {
+    const map = getCellsWhereWordCanBeInsertedByDirection(board, word);
+    const directionsAscendingByLeastUsed =
+      getDirectionsAscendingByLeastUsed(board);
+    for (const dir of directionsAscendingByLeastUsed) {
+      const points = map[dir];
+      if (points.length > 0) {
+        const point = getRandomElement(points);
+        return [point, dir];
+      }
+    }
     throw new Error("Cannot find point to insert word");
   }
-  const directions = getDirectionsWordCanBeInserted(
-    board,
-    word,
-    point.x,
-    point.y
-  );
-  const direction = getRandomElement(directions);
-  insertWordAt(board, word, point.x, point.y, direction);
+  throw new Error(`Wrong strategy: ${strategy}`);
+};
+
+export const getDirectionsAscendingByLeastUsed = (
+  board: Board
+): Direction[] => {
+  return [...DIRECTIONS].sort((a, b) => {
+    const aCount = board.insertedWords.filter(
+      (iw) => iw.direction === a
+    ).length;
+    const bCount = board.insertedWords.filter(
+      (iw) => iw.direction === b
+    ).length;
+    return aCount - bCount;
+  });
 };
 
 export const insertWordAt = (
@@ -264,12 +344,12 @@ export const getPointsForWord = (
       break;
     case Direction.LEFT_BOTTOM_TO_RIGHT_TOP:
       for (let i = 0; i < word.length; i++) {
-        points.push(new Point(x + 1, y - i));
+        points.push(new Point(x + i, y - i));
       }
       break;
     case Direction.LEFT_TOP_TO_RIGHT_BOTTOM:
       for (let i = 0; i < word.length; i++) {
-        points.push(new Point(x + 1, y + i));
+        points.push(new Point(x + i, y + i));
       }
       break;
   }
