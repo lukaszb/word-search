@@ -14,3 +14,7 @@ pre {
 .link {
   @apply cursor-pointer hover:text-sky-400;
 }
+
+kbd {
+  @apply bg-gray-100 border rounded px-1 text-gray-600 text-sm;
+}
